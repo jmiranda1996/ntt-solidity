@@ -1,5 +1,5 @@
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.12;
-pragma abicoder v2;
 
 contract PizzaRestaurant {
 
@@ -28,22 +28,16 @@ contract PizzaRestaurant {
     }
 
     mapping(string => Pizza) public pizzasMap;
-    Pizza[] public pizzasArr;
-
     mapping(address => Order) public ordersMap;
 
-    function addPizza(string memory _name, string memory _code, uint8 _price) public onlyOwner {
-        Pizza memory newPiza = Pizza(_name, _code, _price);
-        pizzasMap[_code] = newPiza;
-        pizzasArr.push(newPiza);
+    // memory - storage
+    function addPizzas(string memory _name, string memory _code, uint8 _price) public onlyOwner {
+        Pizza memory newPizza = Pizza(_name, _code, _price);
+        pizzasMap[_code] = newPizza;
     }
 
     function getPizzaByCode(string memory _code) public view returns(Pizza memory) {
         return pizzasMap[_code];
-    }
-
-    function getAllPizzas() public view returns(Pizza[] memory) {
-        return pizzasArr;
     }
 
     function addOrder(string[] memory _codes) external payable {
@@ -54,8 +48,8 @@ contract PizzaRestaurant {
             total += pizza.price;
         }
         require(msg.value == total, "Incorrect amount");
-        bytes32 orderCode = keccak256(abi.encodePacked(block.timestamp, msg.sender));
-        Order memory newOrder = Order(orderCode, _codes, total, block.timestamp);
+        bytes32 orderId = keccak256(abi.encodePacked(block.timestamp, msg.sender));
+        Order memory newOrder = Order(orderId, _codes, total, block.timestamp);
         ordersMap[msg.sender] = newOrder;
     }
 }
