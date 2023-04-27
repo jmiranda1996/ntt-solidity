@@ -42,10 +42,17 @@ contract PizzaRestaurant is BaseContract {
 
     // ------------------------------------------------------------------
 
+    enum PizzaSize {
+        Personal,
+        Mediana,
+        Familiar
+    }
+
     struct Pizza {
         string name;
         string code;
         uint8 price;
+        PizzaSize size;
     }
 
     struct Order {
@@ -58,8 +65,9 @@ contract PizzaRestaurant is BaseContract {
     mapping(string => Pizza) public pizzasMap;
     mapping(address => Order) public ordersMap;
 
-    function addPizzas(string memory _name, string memory _code, uint8 _price) public onlyOwner {
-        Pizza memory newPizza = Pizza(_name, _code, _price);
+    function addPizzas(string memory _name, string memory _code, uint8 _price, uint8 _size) public onlyOwner {
+        require(_size <= uint8(PizzaSize.Familiar), "Tampo de pizza fuera de rango");
+        Pizza memory newPizza = Pizza(_name, _code, _price, PizzaSize(_size));
         pizzasMap[_code] = newPizza;
     }
 
